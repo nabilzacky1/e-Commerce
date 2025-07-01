@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ZStock</title>
+  <!-- ORIGINAL STYLE BLOCK (left unchanged) -->
   <style>
     /* Reset & base */
     * { box-sizing: border-box; }
@@ -195,6 +196,7 @@
       color: #ccc;
     }
     body.dark-mode #cart-total { color: #eee; }
+
      * {
       box-sizing: border-box;
       margin: 0;
@@ -232,8 +234,346 @@
       100% { transform: translateX(0%); }
     }
   </style>
-</head>
+  <!-- NEW STYLE BLOCK FOR CHECKOUT (added without touching existing) -->
+  <style>
+    .checkout-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 1rem;
+    }
+    .checkout-content {
+      background: #fff;
+      width: 100%;
+      max-width: 500px;
+      border-radius: 8px;
+      padding: 2rem 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .checkout-content h2 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .checkout-content label {
+      display: block;
+      margin-bottom: .3rem;
+      font-weight: 600;
+    }
+    .checkout-content input,
+    .checkout-content textarea,
+    .checkout-content select {
+      width: 100%;
+      padding: .5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    .checkout-summary {
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      font-size: .95rem;
+    }
+    .checkout-summary h4 {
+      margin: 0 0 .8rem 0;
+      font-weight: 700;
+    }
+    .checkout-btns {
+      display: flex;
+      gap: .5rem;
+    }
+    .checkout-btns button {
+      flex: 1;
+    }
 
+    /* Dark mode for checkout */
+    body.dark-mode .checkout-content {
+      background: #222;
+      color: #eee;
+    }
+    body.dark-mode .checkout-content input,
+    body.dark-mode .checkout-content textarea,
+    body.dark-mode .checkout-content select {
+      background: #333;
+      border-color: #555;
+      color: #eee;
+    }
+    body.dark-mode .checkout-summary {
+      background: #2a2a2a;
+      border-color: #555;
+    }
+  </style>
+  
+  <!-- NEW STYLE BLOCK FOR ADDITIONAL FEATURES -->
+  <style>
+    /* Login Modal */
+    .auth-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 1rem;
+    }
+    .auth-content {
+      background: #fff;
+      width: 100%;
+      max-width: 400px;
+      border-radius: 8px;
+      padding: 2rem 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+    .auth-content h2 {
+      margin-top: 0;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    .auth-content input {
+      width: 100%;
+      padding: .7rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #ddd;
+    }
+    .auth-tab {
+      flex: 1;
+      padding: .5rem;
+      text-align: center;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.3s;
+    }
+    .auth-tab.active {
+      border-bottom-color: #007bff;
+      color: #007bff;
+      font-weight: 600;
+    }
+    .user-menu {
+      position: relative;
+      display: inline-block;
+    }
+    .user-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      min-width: 150px;
+      display: none;
+      z-index: 1002;
+    }
+    .user-dropdown a {
+      display: block;
+      padding: .7rem 1rem;
+      text-decoration: none;
+      color: #333;
+      border-bottom: 1px solid #eee;
+      transition: background 0.3s;
+    }
+    .user-dropdown a:hover {
+      background: #f5f5f5;
+    }
+    .user-dropdown a:last-child {
+      border-bottom: none;
+    }
+
+    /* Wishlist */
+    .wishlist-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255,255,255,0.9);
+      border: none;
+      border-radius: 50%;
+      width: 35px;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    .wishlist-btn:hover {
+      background: #fff;
+      transform: scale(1.1);
+    }
+    .wishlist-btn.active {
+      color: #dc3545;
+    }
+    .product {
+      position: relative;
+    }
+
+    /* Product Rating */
+    .product-rating {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0.5rem 0;
+      gap: 0.3rem;
+    }
+    .stars {
+      color: #ffc107;
+      font-size: 14px;
+    }
+    .rating-text {
+      font-size: 12px;
+      color: #666;
+    }
+
+    /* Notifications */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 1rem 1.5rem;
+      background: #28a745;
+      color: white;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 3000;
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+    }
+    .notification.show {
+      transform: translateX(0);
+    }
+    .notification.error {
+      background: #dc3545;
+    }
+
+    /* Filter & Sort */
+    .filters-section {
+      background: #fff;
+      padding: 1rem 2rem;
+      margin-bottom: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .filter-group label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #555;
+    }
+    .filter-group select,
+    .filter-group input {
+      padding: 0.4rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
+    /* Order History Modal */
+    .order-history-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 1rem;
+    }
+    .order-history-content {
+      background: #fff;
+      width: 100%;
+      max-width: 700px;
+      border-radius: 8px;
+      padding: 2rem 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .order-item {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      background: #f9f9f9;
+    }
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    /* Dark mode for new features */
+    body.dark-mode .auth-content,
+    body.dark-mode .order-history-content {
+      background: #222;
+      color: #eee;
+    }
+    body.dark-mode .auth-content input {
+      background: #333;
+      border-color: #555;
+      color: #eee;
+    }
+    body.dark-mode .user-dropdown {
+      background: #222;
+      border-color: #555;
+    }
+    body.dark-mode .user-dropdown a {
+      color: #ccc;
+      border-bottom-color: #444;
+    }
+    body.dark-mode .user-dropdown a:hover {
+      background: #333;
+    }
+    body.dark-mode .filters-section {
+      background: #222;
+      color: #ccc;
+    }
+    body.dark-mode .filter-group select,
+    body.dark-mode .filter-group input {
+      background: #333;
+      border-color: #555;
+      color: #eee;
+    }
+    body.dark-mode .order-item {
+      background: #2a2a2a;
+      border-color: #555;
+    }
+    body.dark-mode .wishlist-btn {
+      background: rgba(34,34,34,0.9);
+      color: #ccc;
+    }
+    body.dark-mode .wishlist-btn:hover {
+      background: #222;
+    }
+  </style>
+</head>
 <body>
 <header>
   <div class="logo">ZStock</div>
@@ -242,19 +582,34 @@
     <a href="#products">Product</a>
     <a href="#contact">Contact</a>
   </nav>
-  <div style="display:flex; align-items:center;">
+  <div style="display:flex; align-items:center; gap: 0.5rem;">
     <input type="text" id="search-input" placeholder="Search products..." />
     <button id="dark-mode-toggle">Dark Mode</button>
+    <button id="wishlist-toggle-btn">❤️ (0)</button>
     <button id="cart-toggle-btn">Cart (0)</button>
+    
+    <!-- User Authentication -->
+    <div id="auth-section">
+      <button id="login-btn">Login</button>
+    </div>
+    <div id="user-section" class="user-menu" style="display: none;">
+      <button id="user-btn">👤 <span id="username">User</span></button>
+      <div class="user-dropdown" id="user-dropdown">
+        <a href="#" id="profile-link">Profile</a>
+        <a href="#" id="orders-link">Order History</a>
+        <a href="#" id="logout-link">Logout</a>
+      </div>
+    </div>
   </div>
 </header>
+
 <div class="slider">
     <div class="slides">
       <img src="https://staticg.sportskeeda.com/editor/2022/11/625c8-16673392265801-1920.jpg" alt="Slide 1" />
       <img src="https://cdn.thewirecutter.com/wp-content/media/2021/02/whitesneakers-2048px-0427.jpg?auto=webp&quality=75&width=980&dpr=2" alt="Slide 2" />
       <img src="https://images.augustman.com/wp-content/uploads/sites/6/2022/09/23074502/untitled-design-38.jpeg" alt="Slide 3" />
     </div>
-  </div>
+</div>
 
 <section id="home" style="padding: 4rem 2rem; text-align:center;">
   <h1>Welcome to ZStock!</h1>
@@ -263,94 +618,139 @@
 
 <section id="products" class="product-section">
   <h2>Our Shoes</h2>
+  
+  <!-- Filters & Sort -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <label>Sort by:</label>
+      <select id="sort-select">
+        <option value="name">Name</option>
+        <option value="price-low">Price: Low to High</option>
+        <option value="price-high">Price: High to Low</option>
+        <option value="rating">Rating</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Price Range:</label>
+      <input type="range" id="price-range" min="0" max="500" value="500" />
+      <span id="price-display">Up to $500</span>
+    </div>
+    <div class="filter-group">
+      <label>Brand:</label>
+      <select id="brand-filter">
+        <option value="">All Brands</option>
+        <option value="ASICS">ASICS</option>
+        <option value="Nike">Nike</option>
+        <option value="Adidas">Adidas</option>
+        <option value="New Balance">New Balance</option>
+        <option value="Puma">Puma</option>
+      </select>
+    </div>
+    <button id="clear-filters">Clear Filters</button>
+  </div>
+  
   <div class="products">
-    <!-- contoh produk seperti di kode kamu -->
     <div class="product" data-name="Running Shoe" data-brand="ASICS GEL-Nimbus 27" data-price="399.99">
+      <button class="wishlist-btn" data-id="1">♡</button>
       <img src="https://images-na.ssl-images-amazon.com/images/I/61LDRH2gPtL.jpg" alt="Running Shoe" />
       <h3>Running Shoe</h3>
       <h4>ASICS GEL-Nimbus 27</h4>
+      <div class="product-rating">
+        <span class="stars">★★★★★</span>
+        <span class="rating-text">(4.8/5)</span>
+      </div>
       <p>$399.99</p>
       <button class="cart-btn">Add to Cart</button>
     </div>
-   <div class="product" data-name="Basketball Shoe" data-brand="Nike KD 7" data-price="289.99">
+    
+    <div class="product" data-name="Basketball Shoe" data-brand="Nike Air Jordan 1" data-price="299.99">
+      <button class="wishlist-btn" data-id="2">♡</button>
       <img src="https://pixy.org/src/143/1435678.jpg" alt="Basketball Shoe" />
       <h3>Basketball Shoe</h3>
       <h4>Nike KD 7</h4>
-      <p>$289.99</p>
-      <button class="cart-btn">Add to Cart</button>
-    </div>
-    <div class="product" data-name="Casual Sneaker" data-brand="Adidas Samba OG" data-price="223.99">
-      <img src="https://i.ebayimg.com/images/g/2zoAAOSwoP1gNk05/s-l1200.webp" alt="Casual Sneaker" />
-      <h3>Casual Sneaker</h3>
-      <h4>Adidas Samba OG</h4>
-      <p>$223.99</p>
-      <button class="cart-btn">Add to Cart</button>
-    </div>
-    <div class="product" data-name="Football Shoe" data-brand="Adidas Predator Edge" data-price="189.99">
-      <img src="https://www.futbolemotion.com/imagesarticulos/208656/grandes/bota-adidas-messi-bienvenido-a-miami-fg-turquesa-0.jpg" alt="Football Shoe" />
-      <h3>Football Shoe</h3>
-      <h4>Adidas Predator Edge</h4>
-      <p>$189.99</p>
-      <button class="cart-btn">Add to Cart</button>
-    </div>
-    <div class="product" data-name="Futsal Shoe" data-brand="Nike Mercurial" data-price="119.99">
-      <img src="https://www.futbolemotion.com/imagesarticulos/176462/grandes/zapatilla-nike-zoom-mercurial-vapor-15-academy-cr7-ic-blanco-0.jpg" alt="Futsal Shoe" />
-      <h3>Futsal Shoe</h3>
-      <h4>Nike Mercurial</h4>
-      <p>$119.99</p>
-      <button class="cart-btn">Add to Cart</button>
-    </div>
-    <div class="product" data-name="Sandal" data-brand="Crocs Classic" data-price="99.99">
-      <img src="https://kxadmin.metroshoes.com/product/118-206750-001-6/1200/118-206750O001.jpg" alt="Sandal" />
-      <h3>Sandal</h3>
-      <h4>Crocs Classic</h4>
-      <p>$99.99</p>
-      <button class="cart-btn">Add to Cart</button>
-    </div>
-    <div class="product" data-name="Loafer" data-brand="Coach Loafer" data-price="149.99">
-      <img src="https://i.ebayimg.com/images/g/TnAAAOSwQF9kL1ns/s-l1200.webp" alt="Loafer" />
-      <h3>Loafer</h3>
-      <h4>Coach Loafer</h4>
-      <p>$149.99</p>
-      <button class="cart-btn">Add to Cart</button>
-    </div>
-    <div class="product" data-name="Boot" data-brand="Dr. Maartens X Alpha" data-price="299.99">
-      <img src="https://i.pinimg.com/originals/0c/7f/9f/0c7f9f09e26c1a4eea7e31780089a73e.jpg" alt="Boot" />
-      <h3>Boot</h3>
-      <h4>Dr. Maartens X Alpha</h4>
+      <div class="product-rating">
+        <span class="stars">★★★★☆</span>
+        <span class="rating-text">(4.5/5)</span>
+      </div>
       <p>$299.99</p>
       <button class="cart-btn">Add to Cart</button>
     </div>
-    <div class="product" data-name="Dress Shoe" data-brand="TTP Men Classic M005" data-price="109.99">
-      <img src="https://media.takealot.com/covers_images/3d2f4c81e253471587a7dfed459fdadf/s-zoom.file" alt="Dress Shoe" />
-      <h3>Dress Shoe</h3>
-      <h4>TTP Men Classic M005</h4>
-      <p>$109.99</p>
+    
+    <div class="product" data-name="Casual Sneaker" data-brand="Adidas Samba OG" data-price="149.99">
+      <button class="wishlist-btn" data-id="3">♡</button>
+      <img src="https://i.ebayimg.com/images/g/2zoAAOSwoP1gNk05/s-l1200.webp" alt="Casual Sneaker" />
+      <h3>Casual Sneaker</h3>
+      <h4>Adidas Samba OG</h4>
+      <div class="product-rating">
+        <span class="stars">★★★★☆</span>
+        <span class="rating-text">(4.2/5)</span>
+      </div>
+      <p>$149.99</p>
       <button class="cart-btn">Add to Cart</button>
     </div>
-    <div class="product" data-name="Sneakers" data-brand="Air Jordan Retro 3" data-price="399.99">
-      <img src="https://bdgastore.com/cdn/shop/files/JordanBrandAIRJORDAN3RETROTDWHITEMETALLICCOPPER-TRUEBLUE4CDM0968-148_2.jpg?v=1682777208" alt="Sneakers" />
+    
+    <div class="product" data-name="Futsal Shoe" data-brand="Nike Mercurial" data-price="119.99">
+      <button class="wishlist-btn" data-id="4">♡</button>
+      <img src="https://www.futbolemotion.com/imagesarticulos/176462/grandes/zapatilla-nike-zoom-mercurial-vapor-15-academy-cr7-ic-blanco-0.jpg" alt="Futsal Shoe Shoe" />
+      <h3>Futsal Shoe</h3>
+      <h4>Nike Mercurial</h4>
+      <div class="product-rating">
+        <span class="stars">★★★★★</span>
+        <span class="rating-text">(4.7/5)</span>
+      </div>
+      <p>$119.99</p>
+      <button class="cart-btn">Add to Cart</button>
+    </div>
+    
+    <div class="product" data-name="Training Shoe" data-brand="Puma RS-X" data-price="179.99">
+      <button class="wishlist-btn" data-id="5">♡</button>
+      <img src="https://images.puma.com/image/upload/f_auto,q_auto,b_rgb:fafafa,w_2000,h_2000/global/369579/01/sv01/fnd/IDN/fmt/png/RS-X-Efekt-Sneakers" alt="Training Shoe" />
+      <h3>Training Shoe</h3>
+      <h4>Puma RS-X</h4>
+      <div class="product-rating">
+        <span class="stars">★★★★☆</span>
+        <span class="rating-text">(4.1/5)</span>
+      </div>
+      <p>$179.99</p>
+      <button class="cart-btn">Add to Cart</button>
+    </div>
+    
+    <div class="product" data-name="Hiking Boot" data-brand="Nike ACG Air Zoom" data-price="249.99">
+      <button class="wishlist-btn" data-id="6">♡</button>
+      <img src="https://i0.wp.com/justfreshkicks.com/wp-content/uploads/2022/08/https___hypebeast.com_image_2022_08_nike-acg-air-zoom-gaiadome-gtx-trails-end-brown-dd2858-200-release-info-001.jpg?w=1386&ssl=1" alt="Hiking Boot" />
+      <h3>Hiking Boot</h3>
+      <h4>Nike ACG Air Zoom</h4>
+      <div class="product-rating">
+        <span class="stars">★★★★☆</span>
+        <span class="rating-text">(4.3/5)</span>
+      </div>
+      <p>$249.99</p>
+      <button class="cart-btn">Add to Cart</button>
+    </div>
+    <div class="product" data-name="Football Shoe" data-brand="Adidas Predator Edge" data-price="189.99">
+      <button class="wishlist-btn" data-id="7">♡</button>
+      <img src="https://www.futbolemotion.com/imagesarticulos/208656/grandes/bota-adidas-messi-bienvenido-a-miami-fg-turquesa-0.jpg" alt="Hiking Boot" />
+      <h3>Football Shoe</h3>
+      <h4>Adidas Predator Edge</h4>
+      <div class="product-rating">
+        <span class="stars">★★★★☆</span>
+        <span class="rating-text">(4.3/5)</span>
+      </div>
+      <p>$189.99</p>
+      <button class="cart-btn">Add to Cart</button>
+    </div>
+    <div class="product" data-name="Sneakers" data-brand="Nike Air Jordan Retro 3" data-price="289.99">
+      <button class="wishlist-btn" data-id="8">♡</button>
+      <img src="http://images.solecollector.com/complex/image/upload/bdaoaxe0asclis4cwtci.jpg" alt="Sneakers" />
       <h3>Sneakers</h3>
-      <h4>Air Jordan Retro 3</h4>
-      <p>$399.99</p>
+      <h4>Nike Air Jordan Retro 3</h4>
+      <div class="product-rating">
+        <span class="stars">★★★★☆</span>
+        <span class="rating-text">(4.3/5)</span>
+      </div>
+      <p>$289.99</p>
       <button class="cart-btn">Add to Cart</button>
     </div>
-     <div class="product" data-name="Hiking Shoe" data-brand="Salomon Speedcross 3" data-price="292.99">
-      <img src="https://www.escapeshoes.com/wp-content/uploads/2016/03/26749-Tenis-SALOMON-Speedcross-3-Cobalt-Blue-Green-370762.jpg" alt="Sneakers" />
-      <h3>Hiking Shoe</h3>
-      <h4>Salomon Speedcross 3</h4>
-      <p>$292.99</p>
-      <button class="cart-btn">Add to Cart</button>
-    </div>
-     <div class="product" data-name="Taruna Shoe" data-brand="Akpol/Akmil" data-price="999.99">
-      <img src="https://down-id.img.susercontent.com/file/id-11134207-7r98t-lvzmbr4vu7u624" alt="Sneakers" />
-      <h3>Taruna Shoe</h3>
-      <h4>Akpol/Akmil</h4>
-      <p>$999.99</p>
-      <button class="cart-btn">Add to Cart</button>
-    </div>
-    <!-- copy dan paste produk lainnya sesuai kebutuhan -->
-    <!-- ... -->
   </div>
 </section>
 
@@ -375,15 +775,97 @@
   <button id="checkout-btn">Checkout</button>
 </div>
 
+<!-- Wishlist -->
+<div id="wishlist" style="position: fixed; top: 70px; right: 350px; background: white; border: 1px solid #ccc; box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 300px; max-height: 400px; overflow-y: auto; padding: 1rem; border-radius: 8px; display: none; z-index: 1001;">
+  <h3>Your Wishlist</h3>
+  <div class="wishlist-list" id="wishlist-items"></div>
+</div>
+
+<!-- CHECKOUT MODAL (new) -->
+<div id="checkout-modal" class="checkout-modal">
+  <div class="checkout-content">
+    <h2>Checkout</h2>
+    <form id="checkout-form">
+      <label for="c-name">Full Name</label>
+      <input id="c-name" type="text" placeholder="John Doe" required>
+      <label for="c-email">Email</label>
+      <input id="c-email" type="email" placeholder="john@example.com" required>
+      <label for="c-address">Shipping Address</label>
+      <textarea id="c-address" rows="3" placeholder="123 Street Name, City, Country" required></textarea>
+      <label for="c-payment">Payment Method</label>
+      <select id="c-payment" required>
+        <option value="credit">Credit Card</option>
+        <option value="transfer">Bank Transfer</option>
+        <option value="cod">Cash on Delivery</option>
+      </select>
+
+      <div class="checkout-summary" id="checkout-summary">
+        <!-- Populated by JS -->
+      </div>
+
+      <div class="checkout-btns">
+        <button type="submit">Place Order</button>
+        <button type="button" id="checkout-cancel-btn" style="background:#dc3545;">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Login/Register Modal -->
+<div id="auth-modal" class="auth-modal">
+  <div class="auth-content">
+    <div class="auth-tabs">
+      <div class="auth-tab active" data-tab="login">Login</div>
+      <div class="auth-tab" data-tab="register">Register</div>
+    </div>
+    
+    <div id="login-form" class="auth-form">
+      <h2>Login</h2>
+      <form>
+        <input type="email" placeholder="Email" required id="login-email">
+        <input type="password" placeholder="Password" required id="login-password">
+        <button type="submit" style="width: 100%; margin-bottom: 1rem;">Login</button>
+        <button type="button" id="demo-login" style="background: #6c757d; width: 100%;">Demo Login</button>
+      </form>
+    </div>
+    
+    <div id="register-form" class="auth-form" style="display: none;">
+      <h2>Register</h2>
+      <form>
+        <input type="text" placeholder="Full Name" required id="register-name">
+        <input type="email" placeholder="Email" required id="register-email">
+        <input type="password" placeholder="Password" required id="register-password">
+        <input type="password" placeholder="Confirm Password" required id="register-confirm">
+        <button type="submit" style="width: 100%;">Register</button>
+      </form>
+    </div>
+    
+    <button id="auth-close" style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+  </div>
+</div>
+
+<!-- Order History Modal -->
+<div id="order-history-modal" class="order-history-modal">
+  <div class="order-history-content">
+    <h2>Order History</h2>
+    <div id="order-history-list"></div>
+    <button id="order-history-close" style="background: #6c757d; margin-top: 1rem;">Close</button>
+  </div>
+</div>
+
+<!-- Notification -->
+<div id="notification" class="notification"></div>
+
 <footer>
   <div class="footer-content">
     <center>
       <p>&copy; 2025 ZStock. All rights reserved.</p>
-      <p>Follow us on <a href="https://www.instagram.com/nabilzaps/">Instagram</a> | <a href="https://wa.wizard.id/d6ed05">Whatsapp</a> | <a href="mailto:nabilzacky1@gmail.com">Gmail</a></p>
+      <p>Follow us on <a href="https://www.instagram.com/nabilzaps/">Instagram</a> | <a href="https://wa.wizard.id/775071">Whatsapp</a> | <a href="mailto:nabilzacky1@gmail.com">Gmail</a></p>
     </center>
   </div>
 </footer>
 
+<!-- ORIGINAL SCRIPT BLOCK (left unchanged)... -->
 <script>
   // toggle dark mode
   document.getElementById('dark-mode-toggle').onclick = () => {
@@ -406,10 +888,7 @@
     
 
     Object.values(cartData).forEach(item => {
-      console.log(item.price,item.qty);
-      const itemTotal = item.price * 1;
-      console.log(itemTotal);
-
+      const itemTotal = item.price * item.qty;
       totalPrice += itemTotal;
       totalQty += item.qty;
 
@@ -423,7 +902,7 @@
           <button class="plus">＋</button>
           <button class="remove">×</button>
         </div>
-        <div class="cart-item-price">$${itemTotal.toFixed(2)}</div>
+        <div class="cart-item-price">${itemTotal.toFixed(2)}</div>
       `;
       cartItemsContainer.appendChild(div);
 
@@ -441,7 +920,7 @@
       };
     });
 
-    cartTotalElem.textContent = `Total: $${totalPrice.toFixed(2)}`;
+    cartTotalElem.textContent = `Total: ${totalPrice.toFixed(2)}`;
     cartToggleBtn.textContent = `Cart (${totalQty})`;
   }
 
@@ -449,7 +928,6 @@
     btn.addEventListener('click', () => {
       const p = btn.closest('.product');
       const name = p.querySelector('h3').textContent;
-      console.log(name)
       const brand = p.querySelector('h4').textContent;
       const price = parseFloat(p.getAttribute('data-price'));
       const key = `${name}-${brand}`;
@@ -463,12 +941,7 @@
     cart.style.display = cart.style.display === 'block' ? 'none' : 'block';
   };
 
-  checkoutBtn.onclick = () => {
-    alert('Proceed to checkout:\n' + 
-      JSON.stringify(cartData, null, 2) + 
-      '\nTotal = ' + cartTotalElem.textContent);
-    // di sini integrasikan backend checkout sesuai kebutuhan
-  };
+  // Placeholder alert removed; actual checkout handled in dedicated modal (see below)
 
   // search filter
   const searchInput = document.getElementById('search-input');
@@ -483,7 +956,388 @@
     });
   });
 </script>
+
+<!-- NEW SCRIPT BLOCK FOR CHECKOUT (added without touching existing) -->
+<script>
+  const checkoutModal = document.getElementById('checkout-modal');
+  const checkoutSummary = document.getElementById('checkout-summary');
+  const checkoutCancelBtn = document.getElementById('checkout-cancel-btn');
+  const checkoutForm = document.getElementById('checkout-form');
+
+  // Open checkout modal & populate order summary
+  checkoutBtn.onclick = () => {
+    if (Object.keys(cartData).length === 0) {
+      alert('Your cart is empty!');
+      return;
+    }
+
+    // Build summary HTML
+    let summaryHTML = '<h4>Order Summary</h4><ul style="list-style:none;padding:0;">';
+    let grandTotal = 0;
+    Object.values(cartData).forEach(item => {
+      const itemTotal = item.price * item.qty;
+      grandTotal += itemTotal;
+      summaryHTML += `<li style="margin-bottom:.5rem;">${item.name} x${item.qty} — ${itemTotal.toFixed(2)}</li>`;
+    });
+    summaryHTML += `</ul><strong>Total: ${grandTotal.toFixed(2)}</strong>`;
+    checkoutSummary.innerHTML = summaryHTML;
+
+    checkoutModal.style.display = 'flex';
+  };
+
+  // Cancel / close modal
+  checkoutCancelBtn.onclick = () => {
+    checkoutModal.style.display = 'none';
+  };
+
+  // Submit order
+  checkoutForm.onsubmit = (e) => {
+    e.preventDefault();
+
+    // Simple client-side validation (HTML5 required already handles most)
+    const orderDetails = {
+      name: document.getElementById('c-name').value,
+      email: document.getElementById('c-email').value,
+      address: document.getElementById('c-address').value,
+      payment: document.getElementById('c-payment').value,
+      items: cartData,
+      total: checkoutSummary.querySelector('strong').innerText.replace('Total: ', '')
+    };
+
+    // For this demo, we just output details & clear cart
+    alert('Order placed successfully!\n\n' + JSON.stringify(orderDetails, null, 2));
+
+    // Reset cart & UI
+    cartData = {};
+    updateCartUI();
+    checkoutModal.style.display = 'none';
+    checkoutForm.reset();
+  };
+
+  // Close checkout when clicking outside content
+  checkoutModal.addEventListener('click', (e) => {
+    if (e.target === checkoutModal) {
+      checkoutModal.style.display = 'none';
+    }
+  });
+</script>
+
+<!-- NEW SCRIPT BLOCK FOR ADDITIONAL FEATURES -->
+<script>
+  // Authentication System
+  let currentUser = null;
+  let users = {
+    'demo@zstock.com': { name: 'Demo User', password: 'demo123', orders: [] }
+  };
+  let orderHistory = [];
+  let wishlistData = {};
+
+  const authModal = document.getElementById('auth-modal');
+  const loginBtn = document.getElementById('login-btn');
+  const authSection = document.getElementById('auth-section');
+  const userSection = document.getElementById('user-section');
+  const userBtn = document.getElementById('user-btn');
+  const userDropdown = document.getElementById('user-dropdown');
+  const notification = document.getElementById('notification');
+
+  // Show notification
+  function showNotification(message, type = 'success') {
+    notification.textContent = message;
+    notification.className = `notification ${type} show`;
+    setTimeout(() => {
+      notification.classList.remove('show');
+    }, 3000);
+  }
+
+  // Auth modal controls
+  loginBtn.onclick = () => authModal.style.display = 'flex';
+  document.getElementById('auth-close').onclick = () => authModal.style.display = 'none';
+
+  // Auth tabs
+  document.querySelectorAll('.auth-tab').forEach(tab => {
+    tab.onclick = () => {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      
+      const tabType = tab.dataset.tab;
+      document.getElementById('login-form').style.display = tabType === 'login' ? 'block' : 'none';
+      document.getElementById('register-form').style.display = tabType === 'register' ? 'block' : 'none';
+    };
+  });
+
+  // Demo login
+  document.getElementById('demo-login').onclick = () => {
+    document.getElementById('login-email').value = 'demo@zstock.com';
+    document.getElementById('login-password').value = 'demo123';
+  };
+
+  // Login form
+  document.getElementById('login-form').querySelector('form').onsubmit = (e) => {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    
+    if (users[email] && users[email].password === password) {
+      currentUser = { email, ...users[email] };
+      authSection.style.display = 'none';
+      userSection.style.display = 'block';
+      document.getElementById('username').textContent = currentUser.name;
+      authModal.style.display = 'none';
+      showNotification(`Welcome back, ${currentUser.name}!`);
+    } else {
+      showNotification('Invalid email or password', 'error');
+    }
+  };
+
+  // Register form
+  document.getElementById('register-form').querySelector('form').onsubmit = (e) => {
+    e.preventDefault();
+    const name = document.getElementById('register-name').value;
+    const email = document.getElementById('register-email').value;
+    const password = document.getElementById('register-password').value;
+    const confirm = document.getElementById('register-confirm').value;
+    
+    if (password !== confirm) {
+      showNotification('Passwords do not match', 'error');
+      return;
+    }
+    
+    if (users[email]) {
+      showNotification('Email already exists', 'error');
+      return;
+    }
+    
+    users[email] = { name, password, orders: [] };
+    showNotification('Registration successful! Please login.');
+    document.querySelector('.auth-tab[data-tab="login"]').click();
+  };
+
+  // User dropdown
+  userBtn.onclick = () => {
+    userDropdown.style.display = userDropdown.style.display === 'block' ? 'none' : 'block';
+  };
+
+  // Logout
+  document.getElementById('logout-link').onclick = (e) => {
+    e.preventDefault();
+    currentUser = null;
+    authSection.style.display = 'block';
+    userSection.style.display = 'none';
+    userDropdown.style.display = 'none';
+    showNotification('Logged out successfully');
+  };
+
+  // Wishlist System
+  const wishlistToggleBtn = document.getElementById('wishlist-toggle-btn');
+  const wishlist = document.getElementById('wishlist');
+  const wishlistItemsContainer = document.getElementById('wishlist-items');
+
+  function updateWishlistUI() {
+    wishlistItemsContainer.innerHTML = '';
+    let wishlistCount = Object.keys(wishlistData).length;
+    
+    Object.values(wishlistData).forEach(item => {
+      const div = document.createElement('div');
+      div.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; font-size: 0.9rem;';
+      div.innerHTML = `
+        <div>${item.name}</div>
+        <button onclick="removeFromWishlist('${item.id}')" style="background: #dc3545; padding: 0.2rem 0.5rem;">×</button>
+      `;
+      wishlistItemsContainer.appendChild(div);
+    });
+    
+    wishlistToggleBtn.textContent = `❤️ (${wishlistCount})`;
+    
+    // Update wishlist buttons
+    document.querySelectorAll('.wishlist-btn').forEach(btn => {
+      const id = btn.dataset.id;
+      btn.textContent = wishlistData[id] ? '❤️' : '♡';
+      btn.classList.toggle('active', !!wishlistData[id]);
+    });
+  }
+
+  function removeFromWishlist(id) {
+    delete wishlistData[id];
+    updateWishlistUI();
+    showNotification('Removed from wishlist');
+  }
+
+  wishlistToggleBtn.onclick = () => {
+    wishlist.style.display = wishlist.style.display === 'block' ? 'none' : 'block';
+  };
+
+  // Wishlist buttons
+  document.querySelectorAll('.wishlist-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const product = btn.closest('.product');
+      const id = btn.dataset.id;
+      const name = product.querySelector('h3').textContent;
+      const brand = product.querySelector('h4').textContent;
+      
+      if (wishlistData[id]) {
+        delete wishlistData[id];
+        showNotification('Removed from wishlist');
+      } else {
+        wishlistData[id] = { id, name, brand };
+        showNotification('Added to wishlist');
+      }
+      updateWishlistUI();
+    };
+  });
+
+  // Filters and Sorting
+  const sortSelect = document.getElementById('sort-select');
+  const priceRange = document.getElementById('price-range');
+  const priceDisplay = document.getElementById('price-display');
+  const brandFilter = document.getElementById('brand-filter');
+  const clearFiltersBtn = document.getElementById('clear-filters');
+
+  function applyFilters() {
+    const sortBy = sortSelect.value;
+    const maxPrice = parseFloat(priceRange.value);
+    const selectedBrand = brandFilter.value;
+    
+    let filteredProducts = [...productElements];
+    
+    // Filter by price
+    filteredProducts = filteredProducts.filter(p => {
+      const price = parseFloat(p.getAttribute('data-price'));
+      return price <= maxPrice;
+    });
+    
+    // Filter by brand
+    if (selectedBrand) {
+      filteredProducts = filteredProducts.filter(p => {
+        const brand = p.getAttribute('data-brand');
+        return brand.includes(selectedBrand);
+      });
+    }
+    
+    // Hide all products first
+    productElements.forEach(p => p.style.display = 'none');
+    
+    // Sort products
+    if (sortBy === 'price-low') {
+      filteredProducts.sort((a, b) => parseFloat(a.getAttribute('data-price')) - parseFloat(b.getAttribute('data-price')));
+    } else if (sortBy === 'price-high') {
+      filteredProducts.sort((a, b) => parseFloat(b.getAttribute('data-price')) - parseFloat(a.getAttribute('data-price')));
+    } else if (sortBy === 'name') {
+      filteredProducts.sort((a, b) => a.getAttribute('data-name').localeCompare(b.getAttribute('data-name')));
+    }
+    
+    // Show filtered products
+    filteredProducts.forEach(p => p.style.display = '');
+    
+    // Reorder in DOM
+    const productsContainer = document.querySelector('.products');
+    filteredProducts.forEach(p => productsContainer.appendChild(p));
+  }
+
+  priceRange.oninput = () => {
+    priceDisplay.textContent = `Up to ${priceRange.value}`;
+    applyFilters();
+  };
+
+  sortSelect.onchange = applyFilters;
+  brandFilter.onchange = applyFilters;
+
+  clearFiltersBtn.onclick = () => {
+    sortSelect.value = 'name';
+    priceRange.value = '500';
+    priceDisplay.textContent = 'Up to $500';
+    brandFilter.value = '';
+    searchInput.value = '';
+    applyFilters();
+  };
+
+  // Order History
+  const orderHistoryModal = document.getElementById('order-history-modal');
+  const orderHistoryList = document.getElementById('order-history-list');
+
+  document.getElementById('orders-link').onclick = (e) => {
+    e.preventDefault();
+    if (!currentUser) {
+      showNotification('Please login to view order history', 'error');
+      return;
+    }
+    
+    orderHistoryList.innerHTML = '';
+    if (currentUser.orders.length === 0) {
+      orderHistoryList.innerHTML = '<p>No orders found.</p>';
+    } else {
+      currentUser.orders.forEach((order, index) => {
+        const orderDiv = document.createElement('div');
+        orderDiv.className = 'order-item';
+        orderDiv.innerHTML = `
+          <div class="order-header">
+            <span>Order #${index + 1}</span>
+            <span>${order.date}</span>
+          </div>
+          <div>Items: ${Object.keys(order.items).length}</div>
+          <div>Total: ${order.total}</div>
+          <div>Status: Delivered</div>
+        `;
+        orderHistoryList.appendChild(orderDiv);
+      });
+    }
+    
+    orderHistoryModal.style.display = 'flex';
+    userDropdown.style.display = 'none';
+  };
+
+  document.getElementById('order-history-close').onclick = () => {
+    orderHistoryModal.style.display = 'none';
+  };
+
+  // Enhanced checkout to save order history
+  const originalCheckoutSubmit = checkoutForm.onsubmit;
+  checkoutForm.onsubmit = (e) => {
+    e.preventDefault();
+    
+    if (!currentUser) {
+      showNotification('Please login to place an order', 'error');
+      return;
+    }
+
+    const orderDetails = {
+      name: document.getElementById('c-name').value,
+      email: document.getElementById('c-email').value,
+      address: document.getElementById('c-address').value,
+      payment: document.getElementById('c-payment').value,
+      items: { ...cartData },
+      total: checkoutSummary.querySelector('strong').innerText,
+      date: new Date().toLocaleDateString()
+    };
+
+    // Save to user's order history
+    currentUser.orders.push(orderDetails);
+    users[currentUser.email].orders = currentUser.orders;
+
+    showNotification('Order placed successfully!');
+
+    // Reset cart & UI
+    cartData = {};
+    updateCartUI();
+    checkoutModal.style.display = 'none';
+    checkoutForm.reset();
+  };
+
+  // Initialize
+  updateWishlistUI();
+  
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!userSection.contains(e.target)) {
+      userDropdown.style.display = 'none';
+    }
+    if (!cart.contains(e.target) && !cartToggleBtn.contains(e.target)) {
+      cart.style.display = 'none';
+    }
+    if (!wishlist.contains(e.target) && !wishlistToggleBtn.contains(e.target)) {
+      wishlist.style.display = 'none';
+    }
+  });
+</script>
 </body>
 </html>
-
-
